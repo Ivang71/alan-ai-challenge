@@ -14,13 +14,12 @@ export class BinarySearchTree<T> {
     const newNode = new TreeNode(data)
     if (this.root === null) {
       this.root = newNode
-    } else
-    {
+    } else {
       this.addNewDataNode(this.root, newNode)
     }
   }
 
-  addNewDataNode(node: TreeNode<T>, newNode: TreeNode<T>) {
+  private addNewDataNode(node: TreeNode<T>, newNode: TreeNode<T>) {
     if (newNode.data < node.data) {
       if (node.left === null) {
         node.left = newNode
@@ -41,7 +40,7 @@ export class BinarySearchTree<T> {
     this.root = this.deleteExistingDataNode(this.root, data)
   }
 
-  deleteExistingDataNode(node: TreeNode<T> | null, key: T) {
+  private deleteExistingDataNode(node: TreeNode<T> | null, key: T) {
     if (node === null) {
       return null
     }
