@@ -50,10 +50,16 @@ document.getElementById('add-node').addEventListener('click', () => {
 })
 
 cy.addListener('tap', 'node', (e) => {
-  const node = e.target
-  console.log(node.data())
-  console.log(cy.elements().map((e) => e.data()))
-  console.log(tree.getRoot())
+  e.target.animate({
+    style: { backgroundColor: '#ae3f3f' }
+  }, {
+    duration: 300,
+  })
+  setTimeout(() => {
+    tree.deleteExistingData(e.target.weight)
+    rerenderTree()
+    cy.layout({ name: 'dagre', animate: false }).run()
+  }, 400)
 })
 
 

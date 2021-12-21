@@ -42,33 +42,24 @@ export class BinarySearchTree<T> {
 
   private deleteExistingDataNode(node: TreeNode<T> | null, key: T) {
     if (node === null) {
-      return null
+      return node
     }
     else if (key < node.data) {
       node.left = this.deleteExistingDataNode(node.left, key)
-      return node
     }
     else if (key > node.data) {
       node.right = this.deleteExistingDataNode(node.right, key)
-      return node
     }
     else {
-      if (node.left === null && node.right === null) {
-        node = null
-        return node
-      }
       if (node.left === null) {
-        node = node.right
-        return node
+        return node.right
       } else if (node.right === null) {
-        node = node.left
-        return node
+        return  node.left
       }
-      const aux = this.findMinValue(node.right)
-      node.data = aux.data
-      node.right = this.deleteExistingDataNode(node.right, aux.data)
-      return node
+      node.data = this.findMinValue(node.right)
+      node.right = this.deleteExistingDataNode(node.right, node.data)
     }
+    return node
   }
 
   inorderTraversal(node: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
@@ -95,12 +86,14 @@ export class BinarySearchTree<T> {
     }
   }
 
-  findMinValue(node: TreeNode<T> | null): TreeNode<T> {
-    if (node?.left === null) {
-      return node
-    } else { // @ts-ignore
-      return this.findMinValue(node.left)
+  findMinValue(node: TreeNode<T> | null): T {
+    let minv = node.data
+    while (node.left != null)
+    {
+      minv = node.left.data
+      node = node.left
     }
+    return minv
   }
 
   getRoot() {

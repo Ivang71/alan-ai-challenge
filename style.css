@@ -1,3 +1,9 @@
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark light;
+  }
+}
+
 body {
   margin: 0;
   font-family: sans-serif;
