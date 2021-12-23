@@ -1,10 +1,12 @@
 // @ts-ignore
 import cytoscape, { ElementDefinition } from 'cytoscape'
 import dagre from 'cytoscape-dagre'
-import { BinarySearchTree } from './utils/BinarySearchTree'
+import { BinarySearchTree, TreeNode } from './utils/BinarySearchTree'
 import { generateNumberInRange } from './utils/commonUtils'
 
+
 cytoscape.use(dagre)
+
 
 // @ts-ignore
 const cy = (window.cy = cytoscape({
@@ -24,7 +26,7 @@ const cy = (window.cy = cytoscape({
         'text-opacity': 0.7,
         'text-valign': 'center',
         'text-halign': 'center',
-        'background-color': '#9db6e3',
+        'background-color': '#9dbaea',
       },
     },
 
@@ -33,7 +35,6 @@ const cy = (window.cy = cytoscape({
       style: {
         'curve-style': 'bezier',
         width: 4,
-        'target-arrow-shape': 'triangle',
         'line-color': '#9dbaea',
         'target-arrow-color': '#9dbaea',
       },
@@ -41,46 +42,68 @@ const cy = (window.cy = cytoscape({
   ],
 }))
 
+
 const tree = new BinarySearchTree<number>()
+
 
 document.getElementById('add-node').addEventListener('click', () => {
   tree.addNewData(generateNumberInRange(-100, 100))
-  rerenderTree()
-  cy.layout({ name: 'dagre', animate: false }).run()
+  updateTree()
+  cy.layout({ name: 'dagre', animate: true }).run()
 })
+
 
 cy.addListener('tap', 'node', (e) => {
   e.target.animate({
-    style: { backgroundColor: '#ae3f3f' }
+    style: { backgroundColor: '#ae3f3f' },
   }, {
     duration: 300,
   })
   setTimeout(() => {
     tree.deleteExistingData(e.target.weight)
-    rerenderTree()
+    updateTree()
     cy.layout({ name: 'dagre', animate: false }).run()
-  }, 400)
+  }, 300)
 })
 
 
-const rerenderTree = () => {
-  cy.remove(cy.elements())
-  const edges: ElementDefinition[] = []
-  tree.inorderTraversal(tree.getRoot(), (node) => {
-    const currentId = 'n' + node.id
-    const newData: ElementDefinition[] = [{ group: 'nodes', data: { id: currentId, weight: node.data } }]
+const updateTree = () => {
+  const nodes = cy.nodes().jsons()
+
+  if (nodes.length === 0) {
+    cy.add({
+      group: 'nodes',
+      data: { id: tree.root.id, weight: tree.root.data, },
+    })
+    return
+  }
+
+  const renderChild = (node: TreeNode<any>, side: 'left' | 'right') => {
+    const childNotRendered = nodes.filter((n) => n.data.id === node[side].id).length === 0
+
+    if (childNotRendered) {
+      const parentRenderedNode = nodes.find<object>((n) => n.data.id === node.id)
+      cy.add([
+        {
+          group: 'nodes',
+          data: { id: node[side].id, weight: node[side].data },
+          position: { ...parentRenderedNode.position }
+        },
+        {
+          group: 'edges',
+          data: { source: node.id, target: node[side].id },
+        },
+      ])
+    }
+  }
+
+  tree.inorderTraversal(tree.root, (node) => {
     if (node.left) {
-      edges.push(
-        { group: 'edges', data: { source: currentId, target: 'n' + node.left.id } }
-      )
+      renderChild(node, 'left')
     }
     if (node.right) {
-      edges.push(
-        { group: 'edges', data: { source: currentId, target: 'n' + node.right.id } }
-      )
+      renderChild(node, 'right')
     }
-    cy.add(newData)
   })
-  cy.add(edges)
 }
 

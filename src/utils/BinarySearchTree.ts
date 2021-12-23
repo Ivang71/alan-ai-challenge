@@ -8,14 +8,20 @@ export class TreeNode<T> {
 }
 
 export class BinarySearchTree<T> {
-  private root: TreeNode<T> | null = null
+  private _root: TreeNode<T> | null = null
+  lastAddedNode: TreeNode<T> | null = null
+
+  get root(): TreeNode<T> | null {
+    return this._root
+  }
 
   addNewData(data: T) {
     const newNode = new TreeNode(data)
-    if (this.root === null) {
-      this.root = newNode
+    this.lastAddedNode = newNode
+    if (this._root === null) {
+      this._root = newNode
     } else {
-      this.addNewDataNode(this.root, newNode)
+      this.addNewDataNode(this._root, newNode)
     }
   }
 
@@ -37,7 +43,7 @@ export class BinarySearchTree<T> {
   }
 
   deleteExistingData(data: T) {
-    this.root = this.deleteExistingDataNode(this.root, data)
+    this._root = this.deleteExistingDataNode(this._root, data)
   }
 
   private deleteExistingDataNode(node: TreeNode<T> | null, key: T) {
@@ -94,10 +100,6 @@ export class BinarySearchTree<T> {
       node = node.left
     }
     return minv
-  }
-
-  getRoot() {
-    return this.root
   }
 
   find(node: TreeNode<T> | null, data: T): TreeNode<T> | null {
