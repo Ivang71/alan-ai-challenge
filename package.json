@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --no-content-hash --public-url ./",
     "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup --verbose"
   },
   "dependencies": {
