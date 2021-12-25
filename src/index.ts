@@ -7,29 +7,23 @@ import { generateNumberInRange } from './utils/commonUtils'
 
 cytoscape.use(dagre)
 
-
 // @ts-ignore
 const cy = (window.cy = cytoscape({
   container: document.getElementById('cy'),
-
   autoungrabify: true,
-
   layout: {
     name: 'dagre',
   },
-
   style: [
     {
       selector: 'node',
       style: {
         content: 'data(weight)',
-        'text-opacity': 0.7,
         'text-valign': 'center',
         'text-halign': 'center',
         'background-color': '#9dbaea',
       },
     },
-
     {
       selector: 'edge',
       style: {
