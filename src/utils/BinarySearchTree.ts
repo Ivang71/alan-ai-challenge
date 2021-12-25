@@ -1,5 +1,5 @@
 export class TreeNode<T> {
-  public readonly id: string = String(Math.random()).replace('0.', '')
+  public id: string = String(Math.random()).replace('0.', '')
   public left: TreeNode<T> | null = null
   public right: TreeNode<T> | null = null
 
@@ -9,7 +9,6 @@ export class TreeNode<T> {
 
 export class BinarySearchTree<T> {
   private _root: TreeNode<T> | null = null
-  lastAddedNode: TreeNode<T> | null = null
 
   get root(): TreeNode<T> | null {
     return this._root
@@ -30,7 +29,6 @@ export class BinarySearchTree<T> {
       return false
     }
     const newNode = new TreeNode(key)
-    this.lastAddedNode = newNode
     if (this._root === null) {
       this._root = newNode
     } else {
@@ -68,7 +66,9 @@ export class BinarySearchTree<T> {
         root.right = this._removeInner(root.right, key)
       }
       else if (root.left && root.right) {
-        root.key = this.findMinNode(root.right).key
+        const { key, id } = this.findMinNode(root.right)
+        root.key = key
+        root.id = id
         root.right = this._removeInner(root.right, root.key)
       }
       else {
