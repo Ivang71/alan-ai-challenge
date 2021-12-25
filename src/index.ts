@@ -1,8 +1,8 @@
 // @ts-ignore
 import cytoscape, { Collection, ElementDefinition } from 'cytoscape'
 import dagre from 'cytoscape-dagre'
-import { BinarySearchTree, TreeNode } from './utils/BinarySearchTree'
-import { generateNumberInRange } from './utils/commonUtils'
+import { BinarySearchTree, TreeNode } from './BinarySearchTree'
+import { generateNumberInRange } from './commonUtils'
 
 
 cytoscape.use(dagre)
@@ -43,10 +43,14 @@ const updateLayout = () => cy.layout({ name: 'dagre', ranker: 'tight-tree', anim
 const tree = new BinarySearchTree<number>()
 
 
-document.getElementById('add-node').addEventListener('click', () => {
+const addButton = document.getElementById('add-node')
+
+addButton.addEventListener('click', () => {
   createNewNode()
   updateLayout()
 })
+
+addButton.innerText = navigator.language === 'ru' ? 'Добавить узел' : 'Add node'
 
 
 cy.addListener('tap', 'node', (e) => {
