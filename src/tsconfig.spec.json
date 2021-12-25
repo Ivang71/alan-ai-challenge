@@ -1,6 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "target": "ES2021",
     "outDir": "../out-tsc/spec",
     "types": [
       "jasmine",
