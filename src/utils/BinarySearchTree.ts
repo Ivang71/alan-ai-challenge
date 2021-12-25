@@ -3,7 +3,7 @@ export class TreeNode<T> {
   public left: TreeNode<T> | null = null
   public right: TreeNode<T> | null = null
 
-  constructor(public data: T) {
+  constructor(public key: T) {
   }
 }
 
@@ -15,105 +15,109 @@ export class BinarySearchTree<T> {
     return this._root
   }
 
-  addNewData(data: T) {
-    const newNode = new TreeNode(data)
+  contains(key: T): boolean {
+    let contains = false
+    this.inorderTraversal(this._root, (node) => {
+      if (node.key == key) {
+        contains = true
+      }
+    })
+    return contains
+  }
+
+  insert(key: T): boolean {
+    if (this.contains(key)) {
+      return false
+    }
+    const newNode = new TreeNode(key)
     this.lastAddedNode = newNode
     if (this._root === null) {
       this._root = newNode
     } else {
-      this.addNewDataNode(this._root, newNode)
+      this.insertNode(this._root, newNode)
     }
+    return true
   }
 
-  private addNewDataNode(node: TreeNode<T>, newNode: TreeNode<T>) {
-    if (newNode.data < node.data) {
-      if (node.left === null) {
-        node.left = newNode
+  private insertNode(root: TreeNode<T>, newNode: TreeNode<T>) {
+    if (newNode.key < root.key) {
+      if (root.left === null) {
+        root.left = newNode
       } else {
-        this.addNewDataNode(node.left, newNode)
+        this.insertNode(root.left, newNode)
       }
-    }
-    else {
-      if (node.right === null) {
-        node.right = newNode
+    } else {
+      if (root.right === null) {
+        root.right = newNode
       } else {
-        this.addNewDataNode(node.right, newNode)
+        this.insertNode(root.right, newNode)
       }
     }
   }
 
-  deleteExistingData(data: T) {
-    this._root = this.deleteExistingDataNode(this._root, data)
+  remove(value) {
+    this._root = this._removeInner(this.root, value)
   }
 
-  private deleteExistingDataNode(node: TreeNode<T> | null, key: T) {
-    if (node === null) {
-      return node
-    }
-    else if (key < node.data) {
-      node.left = this.deleteExistingDataNode(node.left, key)
-    }
-    else if (key > node.data) {
-      node.right = this.deleteExistingDataNode(node.right, key)
-    }
-    else {
-      if (node.left === null) {
-        return node.right
-      } else if (node.right === null) {
-        return  node.left
+  private _removeInner(root: TreeNode<T>, key: T) {
+    if (root) {
+      if (key < root.key) {
+        root.left = this._removeInner(root.left, key)
       }
-      node.data = this.findMinValue(node.right)
-      node.right = this.deleteExistingDataNode(node.right, node.data)
+      else if (key > root.key) {
+        root.right = this._removeInner(root.right, key)
+      }
+      else if (root.left && root.right) {
+        root.key = this.findMinNode(root.right).key
+        root.right = this._removeInner(root.right, root.key)
+      }
+      else {
+        root = root.left || root.right
+      }
     }
-    return node
+    return root
   }
 
-  inorderTraversal(node: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
-    if (node !== null) {
-      this.inorderTraversal(node.left, cb)
-      cb(node)
-      this.inorderTraversal(node.right, cb)
-    }
-  }
-
-  preorderTraversal(node: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
-    if (node !== null) {
-      cb(node)
-      this.preorderTraversal(node.left, cb)
-      this.preorderTraversal(node.right, cb)
-    }
-  }
-
-  postorderTraversal(node: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
-    if (node !== null) {
-      this.postorderTraversal(node.left, cb)
-      this.postorderTraversal(node.right, cb)
-      cb(node)
+  inorderTraversal(root: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
+    if (root !== null) {
+      this.inorderTraversal(root.left, cb)
+      cb(root)
+      this.inorderTraversal(root.right, cb)
     }
   }
 
-  findMinValue(node: TreeNode<T> | null): T {
-    let minv = node.data
-    while (node.left != null)
-    {
-      minv = node.left.data
-      node = node.left
+  preorderTraversal(root: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
+    if (root !== null) {
+      cb(root)
+      this.preorderTraversal(root.left, cb)
+      this.preorderTraversal(root.right, cb)
     }
-    return minv
   }
 
-  find(node: TreeNode<T> | null, data: T): TreeNode<T> | null {
-    if (node === null) {
+  postorderTraversal(root: TreeNode<T> | null, cb: (node: TreeNode<T>) => void) {
+    if (root !== null) {
+      this.postorderTraversal(root.left, cb)
+      this.postorderTraversal(root.right, cb)
+      cb(root)
+    }
+  }
+
+  findMinNode(root: TreeNode<T> | null): TreeNode<T> | null {
+    while (root.left !== null) {
+      root = root.left
+    }
+    return root
+  }
+
+  find(root: TreeNode<T> | null, key: T): TreeNode<T> | null {
+    if (root === null) {
       return null
-    }
-    else if (data < node.data) {
-      return this.find(node.left, data)
-    }
-    else if (data > node.data) {
-      return this.find(node.right, data)
-    }
-    else {
-      return node
+    } else if (key < root.key) {
+      return this.find(root.left, key)
+    } else if (key > root.key) {
+      return this.find(root.right, key)
+    } else {
+      return root
     }
   }
 }
